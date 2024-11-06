@@ -18,6 +18,7 @@
 # Red Hat, Inc.
 #
 import multiprocessing
+import re
 import shutil
 import threading
 import traceback
@@ -50,6 +51,7 @@ from pyanaconda.modules.payloads.payload.dnf.transaction_progress import Transac
     process_transaction_progress
 from pyanaconda.modules.payloads.payload.dnf.utils import get_product_release_version, \
     calculate_hash, transaction_has_errors
+from pyanaconda.modules.payloads.payload.flatpak.flatpak_manager import FlatpakManager
 
 log = get_module_logger(__name__)
 
@@ -103,6 +105,7 @@ class DNFManager(object):
         self._download_location = None
         self._md_hashes = {}
         self._enabled_system_repositories = []
+        self._flatpak_manager = FlatpakManager()
 
     @property
     def _base(self):
@@ -448,6 +451,8 @@ class DNFManager(object):
         # Get the total size. Add another 10% as safeguard.
         total_space = Size((packages_size + files_size) * 1.1)
 
+        total_space = Size(total_space + self._flatpak_manager.install_size)
+
         log.info("Total install size: %s", total_space)
         return total_space
 
@@ -465,6 +470,8 @@ class DNFManager(object):
         # Calculate the download size.
         for tsi in self._base.transaction:
             download_size += tsi.pkg.downloadsize
+
+        download_size += self._flatpak_manager.download_size
 
         # Get the total size. Reserve extra space.
         total_space = download_size + Size("150 MiB")
@@ -582,6 +589,22 @@ class DNFManager(object):
         log.info("The software selection has been resolved (%d packages selected).",
                  len(self._base.transaction))
 
+    @property
+    def flatpak_manager(self):
+        """Get the root object for Flatpak installation"""
+        return self._flatpak_manager
+
+    def set_flatpak_refs(self):
+        """Determine what Flatpaks need to be preinstalled based on resolved transaction"""
+        if self._base.transaction is None:
+            raise RuntimeError("Software has not yet been resovled")
+
+        for tsi in self._base.transaction:
+            for provide in tsi.pkg.provides:
+                m = re.match(r"^flatpak-preinstall\((.*)\)$", str(provide))
+                if m:
+                    self._flatpak_manager.add_flatpak_ref(m.group(1))
+
     def clear_selection(self):
         """Clear the software selection."""
         self._base.reset(goal=True)
@@ -599,6 +622,8 @@ class DNFManager(object):
         """
         for repo in self._base.repos.iter_enabled():
             repo.pkgdir = path
+
+        self.flatpak_manager.set_download_location(path)
 
         self._download_location = path
 

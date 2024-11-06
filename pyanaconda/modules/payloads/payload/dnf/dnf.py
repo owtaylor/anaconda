@@ -42,6 +42,8 @@ from pyanaconda.modules.payloads.payload.dnf.tear_down import ResetDNFManagerTas
 from pyanaconda.modules.payloads.payload.dnf.utils import calculate_required_space
 from pyanaconda.modules.payloads.payload.payload_base import PayloadBase
 from pyanaconda.modules.payloads.payload.dnf.dnf_interface import DNFInterface
+from pyanaconda.modules.payloads.payload.flatpak.installation import CalculateFlatpaksSizeTask, \
+    DownloadFlatpaksTask, InstallFlatpaksTask
 from pyanaconda.modules.payloads.source.factory import SourceFactory
 from pyanaconda.modules.payloads.source.utils import has_network_protocol
 
@@ -421,14 +423,23 @@ class DNFModule(PayloadBase):
                 selection=self.packages_selection,
                 configuration=self.packages_configuration,
             ),
+            CalculateFlatpaksSizeTask(
+                flatpak_manager=self.dnf_manager.flatpak_manager,
+            ),
             PrepareDownloadLocationTask(
                 dnf_manager=self.dnf_manager,
             ),
             DownloadPackagesTask(
                 dnf_manager=self.dnf_manager,
             ),
+            DownloadFlatpaksTask(
+                flatpak_manager=self.dnf_manager.flatpak_manager,
+            ),
             InstallPackagesTask(
                 dnf_manager=self.dnf_manager,
+            ),
+            InstallFlatpaksTask(
+                flatpak_manager=self.dnf_manager.flatpak_manager,
             ),
             CleanUpDownloadLocationTask(
                 dnf_manager=self.dnf_manager,

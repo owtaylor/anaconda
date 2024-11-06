@@ -127,6 +127,9 @@ class SetUpDNFSourcesTask(SetUpSourcesTask):
         self.report_progress(_("Downloading group metadata..."))
         self._load_metadata(dnf_manager)
 
+        # Point the Flatpak Manager to the source
+        self._set_flatpak_source(dnf_manager.flatpak_manager, self._source, repository)
+
         return SetUpDNFSourcesResult(
             dnf_manager=dnf_manager,
             repositories=repositories,
@@ -239,6 +242,13 @@ class SetUpDNFSourcesTask(SetUpSourcesTask):
         for repository in repositories:
             if repository.origin == REPO_ORIGIN_SYSTEM:
                 enable_existing_repository(dnf_manager, repository)
+
+    @staticmethod
+    def _set_flatpak_source(flatpak_manager, source, repository):
+        if source.type == SourceType.CDN or source.type == SourceType.CLOSEST_MIRROR:
+            return
+
+        flatpak_manager.set_source_repository(repository)
 
     @staticmethod
     def _validate_repositories(dnf_manager):

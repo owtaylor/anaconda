@@ -24,6 +24,18 @@ import os
 if "LD_PRELOAD" in os.environ:
     del os.environ["LD_PRELOAD"]  # pylint: disable=environment-modify
 
+# We need Flatpak to read configuration files from the target and write
+# to the target system installation. Since we use the Flatpak API
+# in process, we need to do this by modifying the environment before
+# we start any threads. Setting these variables will be harmless if
+# we aren't actually using Flatpak.
+
+from pyanaconda.core.configuration.anaconda import conf
+os.environ["FLATPAK_DOWNLOAD_TMPDIR"] = os.path.join(conf.target.system_root, "var/tmp")  # pylint: disable=environment-modify
+os.environ["FLATPAK_CONFIG_DIR"] = os.path.join(conf.target.system_root, "etc/flatpak")  # pylint: disable=environment-modify
+os.environ["FLATPAK_OS_CONFIG_DIR"] = os.path.join(conf.target.system_root, "usr/share/flatpak")  # pylint: disable=environment-modify
+os.environ["FLATPAK_SYSTEM_DIR"] = os.path.join(conf.target.system_root, "var/lib/flatpak")  # pylint: disable=environment-modify
+
 from pyanaconda.modules.payloads.payloads import PayloadsService
 service = PayloadsService()
 service.run()

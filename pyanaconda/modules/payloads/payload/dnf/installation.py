@@ -136,6 +136,8 @@ class ResolvePackagesTask(CheckPackagesSelectionTask):
             log.warning("The packages were resolved with warnings:\n\n%s", message)
             raise NonCriticalInstallationError(message)
 
+        self._dnf_manager.set_flatpak_refs()
+
     @property
     def _requirements(self):
         """Requirements for installing packages and groups.

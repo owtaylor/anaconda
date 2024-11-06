@@ -32,6 +32,8 @@ from pyanaconda.modules.payloads.payload.dnf.installation import SetRPMMacrosTas
     ResolvePackagesTask, PrepareDownloadLocationTask, DownloadPackagesTask, InstallPackagesTask, \
     CleanUpDownloadLocationTask, WriteRepositoriesTask, ImportRPMKeysTask, \
     UpdateDNFConfigurationTask
+from pyanaconda.modules.payloads.payload.flatpak.installation import CalculateFlatpaksSizeTask, \
+    DownloadFlatpaksTask, InstallFlatpaksTask
 
 from pyanaconda.modules.payloads.source.factory import SourceFactory
 from pykickstart.version import isRHEL as is_rhel
@@ -1276,9 +1278,12 @@ class DNFModuleTestCase(unittest.TestCase):
         check_instances(tasks, [
             SetRPMMacrosTask,
             ResolvePackagesTask,
+            CalculateFlatpaksSizeTask,
             PrepareDownloadLocationTask,
             DownloadPackagesTask,
+            DownloadFlatpaksTask,
             InstallPackagesTask,
+            InstallFlatpaksTask,
             CleanUpDownloadLocationTask,
         ])
 
