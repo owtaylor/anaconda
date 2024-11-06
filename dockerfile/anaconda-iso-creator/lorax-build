@@ -43,6 +43,7 @@ createrepo_c $REPO_DIR
 lorax -p Fedora -v "$VERSION_ID" -r "$VERSION_ID" \
       --volid Fedora-S-dvd-x86_64-rawh \
       -s http://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/ \
+      -s https://download.copr.fedorainfracloud.org/results/otaylor/flatpak-preinstall/fedora-rawhide-x86_64/ \
       -s file://$REPO_DIR/ \
       "$@" \
       output || cp *.log "$OUT_DIR"

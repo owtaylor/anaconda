@@ -41,6 +41,7 @@ lorax -p Fedora -v "$VERSION_ID" -r "$VERSION_ID" \
       --volid Fedora-S-dvd-x86_64-f{$ distro_release $} \
 {% endif %}
       -s http://dl.fedoraproject.org/pub/fedora/linux/development/{$ distro_release $}/Everything/x86_64/os/ \
+      -s https://download.copr.fedorainfracloud.org/results/otaylor/flatpak-preinstall/fedora-{$ distro_release $}-x86_64/
 {% elif distro_name == "rhel" and distro_release == 10 %}
 MAJOR_VERSION=${VERSION_ID%%.*}
 MINOR_VERSION=${VERSION_ID#*.}
