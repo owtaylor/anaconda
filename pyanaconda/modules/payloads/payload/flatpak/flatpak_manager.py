@@ -129,7 +129,7 @@ class FlatpakManager:
 
         return self._source
 
-    def calculate_size(self, progress: Optional[ProgressReporter]):
+    def calculate_size(self):
         """Calculate the download and install size of the Flatpak content.
 
         :param progress: used to report progress of the operation

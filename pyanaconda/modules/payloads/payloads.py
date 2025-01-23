@@ -154,7 +154,7 @@ class PayloadsService(KickstartService):
         if self.active_payload:
             total += self.active_payload.calculate_required_space()
             if self._flatpak_side_payload:
-                self._flatpak_side_payload.set_sources(self.active_payload.get_sources())
+                self._flatpak_side_payload.set_sources(self.active_payload.sources)
                 self._flatpak_side_payload.set_flatpak_refs(self.active_payload.get_flatpak_refs())
                 total += self._flatpak_side_payload.calculate_required_space()
 

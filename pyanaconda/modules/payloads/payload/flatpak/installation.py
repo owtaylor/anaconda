@@ -43,7 +43,7 @@ class CalculateFlatpaksSizeTask(Task):
         return "Calculate needed space for Flatpaks"
 
     def run(self):
-        self._flatpak_manager.calculate_size(self)
+        self._flatpak_manager.calculate_size()
 
 
 class PrepareDownloadLocationTask(Task):
@@ -67,7 +67,7 @@ class PrepareDownloadLocationTask(Task):
         :return: a path of the download location
         """
 
-        self._flatpak_manager.calculate_size(self)
+        self._flatpak_manager.calculate_size()
 
         path = pick_download_location(self._flatpak_manager.download_size,
                                       self._flatpak_manager.install_size,
